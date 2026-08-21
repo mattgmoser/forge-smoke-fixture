@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { beforeEach, describe, it } from "node:test";
-import { advanceParcel, createParcel, getParcel, quote } from "../src/parcels";
+import { advanceParcel, createParcel, getParcel, quote, validateNewParcel } from "../src/parcels";
 import { reset } from "../src/store";
 
 beforeEach(() => reset());
@@ -50,5 +50,36 @@ describe("quote", () => {
   it("charges handling plus a per-kilo rate", () => {
     const parcel = createParcel({ destination: "Derby", weightKg: 2.5 });
     assert.equal(quote(parcel), 250 + 300);
+  });
+});
+
+describe("validateNewParcel", () => {
+  it("returns null for a valid parcel", () => {
+    assert.equal(validateNewParcel({ destination: "Bristol", weightKg: 1 }), null);
+  });
+
+  it("rejects a missing weightKg", () => {
+    const result = validateNewParcel({ destination: "Bristol" });
+    assert.ok(result !== null, "expected an error message");
+  });
+
+  it("rejects weightKg set to null", () => {
+    const result = validateNewParcel({ destination: "Bristol", weightKg: null });
+    assert.ok(result !== null, "expected an error message");
+  });
+
+  it("rejects weightKg that is a string", () => {
+    const result = validateNewParcel({ destination: "Bristol", weightKg: "heavy" });
+    assert.ok(result !== null, "expected an error message");
+  });
+
+  it("rejects weightKg of zero", () => {
+    const result = validateNewParcel({ destination: "Bristol", weightKg: 0 });
+    assert.ok(result !== null, "expected an error message");
+  });
+
+  it("rejects a negative weightKg", () => {
+    const result = validateNewParcel({ destination: "Bristol", weightKg: -5 });
+    assert.ok(result !== null, "expected an error message");
   });
 });
