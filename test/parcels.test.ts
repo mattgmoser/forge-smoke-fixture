@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { beforeEach, describe, it } from "node:test";
-import { advanceParcel, createParcel, getParcel, quote } from "../src/parcels";
+import { advanceParcel, createParcel, getParcel, quote, validateNewParcel } from "../src/parcels";
 import { reset } from "../src/store";
 
 beforeEach(() => reset());
@@ -50,5 +50,47 @@ describe("quote", () => {
   it("charges handling plus a per-kilo rate", () => {
     const parcel = createParcel({ destination: "Derby", weightKg: 2.5 });
     assert.equal(quote(parcel), 250 + 300);
+  });
+});
+
+describe("validateNewParcel", () => {
+  it("returns null for a valid input", () => {
+    assert.equal(validateNewParcel({ destination: "Bristol", weightKg: 1 }), null);
+  });
+
+  it("rejects input when weightKg is missing", () => {
+    const error = validateNewParcel({ destination: "Bristol" });
+    assert.ok(error, "expected an error string");
+    assert.match(error as string, /weightKg/);
+  });
+
+  it("rejects input when weightKg is null", () => {
+    const error = validateNewParcel({ destination: "Bristol", weightKg: null });
+    assert.ok(error, "expected an error string");
+    assert.match(error as string, /weightKg/);
+  });
+
+  it("rejects input when weightKg is a string", () => {
+    const error = validateNewParcel({ destination: "Bristol", weightKg: "heavy" });
+    assert.ok(error, "expected an error string");
+    assert.match(error as string, /weightKg/);
+  });
+
+  it("rejects input when weightKg is zero", () => {
+    const error = validateNewParcel({ destination: "Bristol", weightKg: 0 });
+    assert.ok(error, "expected an error string");
+    assert.match(error as string, /weightKg/);
+  });
+
+  it("rejects input when weightKg is negative", () => {
+    const error = validateNewParcel({ destination: "Bristol", weightKg: -5 });
+    assert.ok(error, "expected an error string");
+    assert.match(error as string, /weightKg/);
+  });
+
+  it("rejects input when weightKg is NaN", () => {
+    const error = validateNewParcel({ destination: "Bristol", weightKg: NaN });
+    assert.ok(error, "expected an error string");
+    assert.match(error as string, /weightKg/);
   });
 });
