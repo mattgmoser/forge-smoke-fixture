@@ -1,3 +1,4 @@
+// Defines the shared TypeScript types and interfaces used throughout the application.
 export type ParcelStatus = "accepted" | "in_transit" | "delivered";
 
 export interface Parcel {
