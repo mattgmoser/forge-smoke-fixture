@@ -11,5 +11,5 @@ export interface Parcel {
 /** What a caller sends to POST /parcels. */
 export interface NewParcel {
   destination: string;
-  weightKg: number;
+  weightKg: unknown;
 }

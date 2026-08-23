@@ -18,6 +18,41 @@ describe("createParcel", () => {
     const second = createParcel({ destination: "Bath", weightKg: 1 });
     assert.equal(second.id, "PT-000002");
   });
+
+  it("rejects a parcel when weightKg is missing", () => {
+    assert.throws(
+      () => createParcel({ destination: "Bristol" } as never),
+      RangeError,
+    );
+  });
+
+  it("rejects a parcel when weightKg is not a number", () => {
+    assert.throws(
+      () => createParcel({ destination: "Bristol", weightKg: "heavy" } as never),
+      RangeError,
+    );
+  });
+
+  it("rejects a parcel when weightKg is zero", () => {
+    assert.throws(
+      () => createParcel({ destination: "Bristol", weightKg: 0 }),
+      RangeError,
+    );
+  });
+
+  it("rejects a parcel when weightKg is negative", () => {
+    assert.throws(
+      () => createParcel({ destination: "Bristol", weightKg: -1 }),
+      RangeError,
+    );
+  });
+
+  it("rejects a parcel when weightKg is NaN", () => {
+    assert.throws(
+      () => createParcel({ destination: "Bristol", weightKg: NaN }),
+      RangeError,
+    );
+  });
 });
 
 describe("getParcel", () => {
