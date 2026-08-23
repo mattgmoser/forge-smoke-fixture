@@ -8,8 +8,8 @@ export interface Parcel {
   createdAt: string;
 }
 
-/** What a caller sends to POST /parcels. */
+/** What a caller sends to POST /parcels. weightKg is validated at runtime. */
 export interface NewParcel {
   destination: string;
-  weightKg: number;
+  weightKg: unknown;
 }

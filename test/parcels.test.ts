@@ -52,3 +52,38 @@ describe("quote", () => {
     assert.equal(quote(parcel), 250 + 300);
   });
 });
+
+describe("createParcel weightKg validation", () => {
+  it("rejects a missing weightKg", () => {
+    assert.throws(
+      () => createParcel({ destination: "Bristol" } as never),
+      RangeError,
+    );
+  });
+
+  it("rejects weightKg that is not a number", () => {
+    assert.throws(
+      () => createParcel({ destination: "Bristol", weightKg: "heavy" } as never),
+      RangeError,
+    );
+  });
+
+  it("rejects weightKg of zero", () => {
+    assert.throws(
+      () => createParcel({ destination: "Bristol", weightKg: 0 }),
+      RangeError,
+    );
+  });
+
+  it("rejects a negative weightKg", () => {
+    assert.throws(
+      () => createParcel({ destination: "Bristol", weightKg: -1 }),
+      RangeError,
+    );
+  });
+
+  it("accepts a positive weightKg", () => {
+    const parcel = createParcel({ destination: "Bristol", weightKg: 0.1 });
+    assert.equal(parcel.weightKg, 0.1);
+  });
+});
