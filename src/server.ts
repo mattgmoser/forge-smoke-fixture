@@ -22,9 +22,13 @@ export const server = createServer((req, res) => {
     let body = "";
     req.on("data", (chunk) => (body += chunk));
     req.on("end", () => {
-      const input = JSON.parse(body || "{}");
-      const parcel = createParcel(input);
-      json(res, 201, { parcel, quotePence: quote(parcel) });
+      try {
+        const input = JSON.parse(body || "{}");
+        const parcel = createParcel(input);
+        json(res, 201, { parcel, quotePence: quote(parcel) });
+      } catch (err) {
+        json(res, 400, { error: err instanceof Error ? err.message : "Bad request" });
+      }
     });
     return;
   }

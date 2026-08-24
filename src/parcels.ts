@@ -8,12 +8,23 @@ const NEXT_STATUS: Record<ParcelStatus, ParcelStatus | null> = {
 };
 
 /**
+ * Throw a descriptive Error when the supplied weightKg is not a positive number.
+ * The message is safe to forward to callers.
+ */
+function validateWeight(weightKg: unknown): asserts weightKg is number {
+  if (typeof weightKg !== "number" || isNaN(weightKg)) {
+    throw new Error("weightKg must be a number");
+  }
+  if (weightKg <= 0) {
+    throw new Error("weightKg must be greater than zero");
+  }
+}
+
+/**
  * Book a new parcel into the network.
- *
- * The carrier feed is trusted to send well-formed records, so the fields are
- * taken as given.
  */
 export function createParcel(input: NewParcel): Parcel {
+  validateWeight((input as unknown as Record<string, unknown>).weightKg);
   return save({
     id: nextId(),
     destination: input.destination,
