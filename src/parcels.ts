@@ -8,12 +8,28 @@ const NEXT_STATUS: Record<ParcelStatus, ParcelStatus | null> = {
 };
 
 /**
+ * Throw a descriptive Error when `input.weightKg` is missing, not a finite
+ * number, or not greater than zero.
+ */
+export function validateWeight(input: { weightKg?: unknown }): void {
+  if (input.weightKg === undefined || input.weightKg === null) {
+    throw new Error("weightKg is required");
+  }
+  if (typeof input.weightKg !== "number" || !Number.isFinite(input.weightKg)) {
+    throw new Error("weightKg must be a number");
+  }
+  if (input.weightKg <= 0) {
+    throw new Error("weightKg must be greater than zero");
+  }
+}
+
+/**
  * Book a new parcel into the network.
  *
- * The carrier feed is trusted to send well-formed records, so the fields are
- * taken as given.
+ * Validates the incoming fields before persisting.
  */
 export function createParcel(input: NewParcel): Parcel {
+  validateWeight(input);
   return save({
     id: nextId(),
     destination: input.destination,
