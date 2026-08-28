@@ -1,5 +1,5 @@
 import { find, nextId, save } from "./store";
-import type { NewParcel, Parcel, ParcelStatus } from "./types";
+import type { Parcel, ParcelStatus } from "./types";
 
 const NEXT_STATUS: Record<ParcelStatus, ParcelStatus | null> = {
   accepted: "in_transit",
@@ -10,14 +10,24 @@ const NEXT_STATUS: Record<ParcelStatus, ParcelStatus | null> = {
 /**
  * Book a new parcel into the network.
  *
- * The carrier feed is trusted to send well-formed records, so the fields are
- * taken as given.
+ * Throws a RangeError when weightKg is missing, not a finite number, or not
+ * greater than zero.
  */
-export function createParcel(input: NewParcel): Parcel {
+export function createParcel(input: Record<string, unknown>): Parcel {
+  const { weightKg } = input;
+  if (
+    weightKg === undefined ||
+    weightKg === null ||
+    typeof weightKg !== "number" ||
+    !Number.isFinite(weightKg) ||
+    weightKg <= 0
+  ) {
+    throw new RangeError("weightKg must be a number greater than zero");
+  }
   return save({
     id: nextId(),
-    destination: input.destination,
-    weightKg: input.weightKg,
+    destination: String(input.destination ?? ""),
+    weightKg,
     status: "accepted",
     createdAt: new Date().toISOString(),
   });
